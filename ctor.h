@@ -4,21 +4,19 @@
 #include <stdlib.h>
 #include "check.h"
 
-struct Stack
-{
-    stack_element_t* data; //
-    size_t size;
-    size_t capacity;
-};
 
-typedef double stack_element_t;
+
+
 #define AMOUNT 5
 #define DELTA 2
 
-void ctor(Stack* stk, size_t );
+void ctor(Stack* stk);
 
-void more_size(Stack* stk);
-void less_size(Stack* stk);
+void change_capacity(Stack* stk);
+void more_capacity(Stack* stk);
+void less_capacity(Stack* stk);
+
+void cool_realloc(Stack* stk);
 
 void dtor(Stack* stk);
 

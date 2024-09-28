@@ -1,13 +1,14 @@
 #include <stdio.h>
 
-#include "push.h"
+#include "stack_actions.h"
 
 int push(Stack* stk)
 {
     assert(stk != nullptr);
 
-    stk->size = stk->size + 1;
+    change_capacity(stk);
 
+    stk->size = stk->size + 1;
     stack_element_t input = 0;
     scanf("%lf", &input);
 
@@ -19,6 +20,8 @@ int push(Stack* stk)
 int pop(Stack* stk, stack_element_t* output)
 {
     assert(stk != nullptr);
+
+    change_capacity(stk);
 
     *(output) = *(stk->data + stk->size);
     *(stk->data + stk->size) = 0;
