@@ -4,11 +4,10 @@
 #include <stdlib.h>
 #include "check.h"
 
-
-
-
 #define AMOUNT 5
 #define DELTA 2
+//#define STACK_CTOR(stk)\
+ctor()
 
 void ctor(Stack* stk);
 

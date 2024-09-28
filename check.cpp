@@ -6,8 +6,14 @@ void dump(Stack* stk)
 {
     assert(stk != nullptr);
 
-    printf("array data address %p\n", stk->data);
+    printf("%s [%x]\n",stk->name, stk);  //можно ли сделать так, чтобы название типа данных (Stack), передавалось автоматически? #stk?
 
+    printf("called from %s: %d (%s)\n", stk->file, stk->code_str, stk->func);
+    printf("name %s born at %s: %d (%s)\n", stk->origin_file, stk->origin_str, stk->origin_func);
+
+    printf("{\nleft canary  = %x\n", );  //дописать значение hexspeak
+
+    printf("array data address %p\n", stk->data);
     printf("capacity %d\n", stk->capacity);
 
     for (int i = 0; i < stk->size; i++)
@@ -34,9 +40,13 @@ int errors(Stack* stk)
     }
 }
 
-void stack_assert_func(Stack* stk) // про местоположение в коде не поняла, как рассмотреть весь код как файл через аргументы?
+void stack_assert_func(Stack* stk) // хочется, чтобы именно эта функция принимала текущее занчение файла и тд
 {
     assert(stk != nullptr);
+
+    stk->CurrentData.file = __FILE__; //так будет работать? эахватит изначальный файл иди обратится именно к функции stack_assert?
+    stk->CurrentData.func = __func__;
+    stk->CurrentData.code_str = __LINE__;
 
     if (errors(stk) != ALL_RIGHT)
     {

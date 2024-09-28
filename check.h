@@ -14,12 +14,28 @@ enum Problem
 
 typedef double stack_element_t;
 
-struct Stack
+struct Stack //сохранить то, где структура была инициализирована
 {
+    CurrentData file_data;
+
+    const char* name;
+    const char* origin_file;
+    const char* origin_str;
+    const char* origin_func;
+
     stack_element_t* data;
     size_t size;
     size_t capacity;
 };
+
+struct CurrentData
+{
+    const char* file;
+    const char* func;
+    const int* code_str;
+    //
+};
+
 
 void dump(Stack* stk);
 int errors(Stack* stk);

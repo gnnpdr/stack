@@ -47,7 +47,7 @@ void cool_realloc(Stack* stk)
 
     stk->data = (stack_element_t*)realloc(stk->data, stk->capacity*sizeof(stack_element_t));
 
-    for (int i = stk->capacity / DELTA; i <= stk->capacity; i++)
+    for (int i = stk->capacity / DELTA; i <= stk->capacity; i++) //заменить на memset
         *(stk->data + i) = 0; 
 }
 

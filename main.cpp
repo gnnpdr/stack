@@ -8,8 +8,14 @@
 
 int main()
 {
-    Stack stk = {};
+    Stack stk = {};  // как бы так ее заполнить неполностью? только те значения, которые нужны, не вынося на отдельные строчки
     
+    stk.name = #stk;
+
+    stk.origin_file = __FILE__;
+    stk.origin_str = __LINE__;
+    stk.origin_func = __func__;
+
     ctor(&stk);
     
     bool err = 0;
