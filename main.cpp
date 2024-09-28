@@ -10,14 +10,14 @@ int main()
 {
     Stack stk = {};
     
-    ctor(&stk, AMOUNT);
+    ctor(&stk);
     
     bool err = 0;
 
     stack_element_t element = 0;
 
-    CHECK_ push(&stk, 10);
-    CHECK_ push(&stk, 20);
+    CHECK_ push(&stk);
+    CHECK_ push(&stk);
 
     CHECK_ pop(&stk, &element);
     CHECK_ pop(&stk, &element);
