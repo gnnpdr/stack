@@ -4,14 +4,16 @@
 #include <assert.h>
 #include <math.h>
 
-#define ASSERT (stk ...) stack_assert_func(stk, __FILE__, __func__, __LINE__);
-
 #define DEBUG
-    #define ON_DEBUG(code) code
+
+#ifdef DEBUG
+    #define ON_DEBUG(...) __VA_ARGS__
+    #define ASSERT(stk, ...) stack_assert_func(stk __VA_ARGS__);
 #else
     #define ON_DEBUG(code)
 #endif
 
+#ifdef DEBUG
 enum Problem
 {
     ALL_RIGHT,
@@ -20,17 +22,16 @@ enum Problem
     FILLING_PROBLEM,
     NOT_PTR
 };
+#endif
 
 typedef double stack_element_t;
 
 struct Stack
 {
-    #ifdef DEBUG  //надо как-то поумнее сделать, чтоюы весь код одним макросом, а не через ifdef
-
+    #ifdef DEBUG
     const char* origin_file;
     const int* origin_str;
     const char* origin_func;
-
     #endif
 
     stack_element_t* data;
@@ -39,9 +40,9 @@ struct Stack
 };
 
 
-void dump(Stack* stk, const char* file, const char* func, const int code_str);
+void dump(Stack* stk ON_DEBUG(, const char* file, const char* func, const int code_str));
 int errors(Stack* stk);
 
-void stack_assert_func(Stack* stk, const char* file, const char* func, const int code_str);
+void stack_assert_func(Stack* stk ON_DEBUG(, const char* file, const char* func, const int code_str));
 
 #endif //_CHECK_H_

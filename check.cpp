@@ -2,8 +2,10 @@
 
 #include "check.h"
 
-void dump(Stack* stk, const char* file, const char* func, const int code_str)
-{
+#ifdef DEBUG
+
+void dump(Stack* stk ON_DEBUG(, const char* file, const char* func, const int code_str))
+{   //вставить сюда кучу assertов, чтобы эта штука никогда не падала
     //assert(stk != nullptr);
 
     printf("Stack [stk]\n");
@@ -44,13 +46,10 @@ int errors(Stack* stk)
     }
 }
 
-void stack_assert_func(Stack* stk, const char* file, const char* func, const int code_str) // хочется, чтобы именно эта функция принимала текущее занчение файла и тд
+void stack_assert_func(Stack* stk ON_DEBUG(, const char* file, const char* func, const int code_str)) // хочется, чтобы именно эта функция принимала текущее занчение файла и тд
 {
-    //assert(stk != nullptr);
-
     if (errors(stk) != ALL_RIGHT)
-    {
         dump(stk, file, func, code_str);
-        //assert(0);                  //я прописала конкретные проблемы в enum, как это можно использовать? как код ошибки?
-    }
 }
+
+#endif

@@ -6,13 +6,11 @@
 
 #define CHECK_ if (!err) err =
 
-#define CTOR(&stk ...) ctor(&stk __VA_ARGS__); //работает?
-
 int main()
 {
     Stack stk = {};
 
-    ctor(&stk ON_DEBUG(, __FILE__, __LINE__, __func__));
+    CTOR(&stk ON_DEBUG(, __FILE__, __LINE__, __func__));
     
     bool err = 0;
 

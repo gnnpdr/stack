@@ -8,11 +8,9 @@
 #define AMOUNT 5
 #define DELTA 2
 
-#ifdef DEBUG
-    #define CTOR(stk)
-#endif
+#define CTOR(stk, ...) ctor(stk __VA_ARGS__); //работает?
 
-void ctor(Stack* stk, const char* file, const int line, const char* func);
+void ctor(Stack* stk ON_DEBUG(, const char* file, const int line, const char* func));
 
 void change_capacity(Stack* stk);
 void more_capacity(Stack* stk);
