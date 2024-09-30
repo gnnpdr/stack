@@ -8,6 +8,9 @@
 #define AMOUNT 5
 #define DELTA 2
 
+
+#define POISON 13 //хочется еще дописать типа poison, но формат double не позволяет, что бы такого предпринять?
+
 #define CTOR(stk, ...) ctor(stk __VA_ARGS__); //работает?
 
 void ctor(Stack* stk ON_DEBUG(, const char* file, const int line, const char* func));

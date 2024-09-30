@@ -15,7 +15,14 @@ void ctor(Stack* stk ON_DEBUG(, const char* file, const int line, const char* fu
     stk->size = 0;
     stk->capacity = AMOUNT;
 
-    stk->data = (stack_element_t*)calloc(stk->capacity, sizeof(stack_element_t));
+    stk->data = (stack_element_t*)calloc(stk->capacity ON_DEBUG(+2), sizeof(stack_element_t));
+
+    #ifdef DEBUG
+    *(stk->data) = stk->left_canary;
+    *(stk->data + stk->capacity + 2) = stk->right_canary;
+    #endif
+
+    memset(stk->data, POISON, stk->capacity);
 
     ASSERT(stk ON_DEBUG(, __FILE__, __func__, __LINE__));
 }
@@ -51,6 +58,11 @@ void less_capacity(Stack* stk)
     stk->capacity = stk->capacity / DELTA;
     stk->data = (stack_element_t*)realloc(stk->data, stk->capacity*sizeof(stack_element_t));
 
+    #ifdef DEBUG
+    *(stk->data) = stk->left_canary;
+    *(stk->data + stk->capasity + 2) = stk->right_canary;
+    #endif
+
     ASSERT(stk ON_DEBUG(, __FILE__, __func__, __LINE__));
 }
 
@@ -59,8 +71,12 @@ void cool_realloc(Stack* stk)
     ASSERT(stk ON_DEBUG(, __FILE__, __func__, __LINE__));
 
     stk->data = (stack_element_t*)realloc(stk->data, stk->capacity*sizeof(stack_element_t));
+    memset(stk->data + stk->size, POISON, stk->size);
 
-    memset(stk->data + stk->size, NAN, stk->size);
+    #ifdef DEBUG
+    *(stk->data) = stk->left_canary;
+    *(stk->data + stk->capacity + 2) = stk->right_canary;
+    #endif
 
     ASSERT(stk ON_DEBUG(, __FILE__, __func__, __LINE__));
 }

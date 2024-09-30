@@ -29,9 +29,12 @@ typedef double stack_element_t;
 struct Stack
 {
     #ifdef DEBUG
+    const int left_canary = 0xCOOL;  //ошибка, как этим пользоваться? и как бы так сделать, чтобы эта ячейка не менялась
     const char* origin_file;
     const int* origin_str;
     const char* origin_func;
+    unsigned long hash = 5381;
+    const int right_canary = 0xCOOL;
     #endif
 
     stack_element_t* data;
@@ -44,5 +47,7 @@ void dump(Stack* stk ON_DEBUG(, const char* file, const char* func, const int co
 int errors(Stack* stk);
 
 void stack_assert_func(Stack* stk ON_DEBUG(, const char* file, const char* func, const int code_str));
+
+unsigned long hash(char *str);
 
 #endif //_CHECK_H_
