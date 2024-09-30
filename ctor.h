@@ -2,14 +2,17 @@
 #define _CTOR_H_
 
 #include <stdlib.h>
+#include <string.h>
 #include "check.h"
 
 #define AMOUNT 5
 #define DELTA 2
-//#define STACK_CTOR(stk)\
-ctor()
 
-void ctor(Stack* stk);
+#ifdef DEBUG
+    #define CTOR(stk)
+#endif
+
+void ctor(Stack* stk, const char* file, const int line, const char* func);
 
 void change_capacity(Stack* stk);
 void more_capacity(Stack* stk);

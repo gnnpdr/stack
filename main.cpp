@@ -6,17 +6,13 @@
 
 #define CHECK_ if (!err) err =
 
+#define CTOR(&stk ...) ctor(&stk __VA_ARGS__); //работает?
+
 int main()
 {
-    Stack stk = {};  // как бы так ее заполнить неполностью? только те значения, которые нужны, не вынося на отдельные строчки
-    
-    stk.name = #stk;
+    Stack stk = {};
 
-    stk.origin_file = __FILE__;
-    stk.origin_str = __LINE__;
-    stk.origin_func = __func__;
-
-    ctor(&stk);
+    ctor(&stk ON_DEBUG(, __FILE__, __LINE__, __func__));
     
     bool err = 0;
 

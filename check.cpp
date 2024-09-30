@@ -2,16 +2,16 @@
 
 #include "check.h"
 
-void dump(Stack* stk)
+void dump(Stack* stk, const char* file, const char* func, const int code_str)
 {
-    assert(stk != nullptr);
+    //assert(stk != nullptr);
 
-    printf("%s [%x]\n",stk->name, stk);  //можно ли сделать так, чтобы название типа данных (Stack), передавалось автоматически? #stk?
+    printf("Stack [stk]\n");
 
-    printf("called from %s: %d (%s)\n", stk->file, stk->code_str, stk->func);
+    printf("called from %s: %d (%s)\n", file, code_str, func);
     printf("name %s born at %s: %d (%s)\n", stk->origin_file, stk->origin_str, stk->origin_func);
 
-    printf("{\nleft canary  = %x\n", );  //дописать значение hexspeak
+    //printf("{\nleft canary  = %x\n", );  //дописать значение hexspeak
 
     printf("array data address %p\n", stk->data);
     printf("capacity %d\n", stk->capacity);
@@ -26,6 +26,10 @@ void dump(Stack* stk)
 int errors(Stack* stk)
 {
     assert(stk != nullptr);
+    assert(stk->data != nullptr);
+
+    if (stk == nullptr)
+        return NOT_PTR;
 
     if (stk->capacity <= 0)
         return NO_PLACE;
@@ -40,17 +44,13 @@ int errors(Stack* stk)
     }
 }
 
-void stack_assert_func(Stack* stk) // хочется, чтобы именно эта функция принимала текущее занчение файла и тд
+void stack_assert_func(Stack* stk, const char* file, const char* func, const int code_str) // хочется, чтобы именно эта функция принимала текущее занчение файла и тд
 {
-    assert(stk != nullptr);
-
-    stk->CurrentData.file = __FILE__; //так будет работать? эахватит изначальный файл иди обратится именно к функции stack_assert?
-    stk->CurrentData.func = __func__;
-    stk->CurrentData.code_str = __LINE__;
+    //assert(stk != nullptr);
 
     if (errors(stk) != ALL_RIGHT)
     {
-        dump(stk);
-        assert(0);                  //я прописала конкретные проблемы в enum, как это можно использовать? как код ошибки?
+        dump(stk, file, func, code_str);
+        //assert(0);                  //я прописала конкретные проблемы в enum, как это можно использовать? как код ошибки?
     }
 }
