@@ -4,22 +4,22 @@
 
 #ifdef DEBUG
 
-void dump(Stack* stk ON_DEBUG(, const char* file, const char* func, const int code_str))
+void dump(Stack* stk , const char* file, const char* func, const int code_str)
 {   //вставить сюда кучу assertов, чтобы эта штука никогда не падала
 
-    printf("Stack [%x]\n", stk);
+    printf("Stack [%x]\n", (size_t)stk);
 
-    printf("called from %s: %d (%s)\n", file, code_str, func);
+    
     printf("name stk born at %s: %d (%s)\n", stk->origin_file, stk->origin_str, stk->origin_func);
 
-    printf("{\nleft canary = %x\n", stk->left_canary);
-    printf("{\nright canary = %x\n", stk->right_canary);
+    printf("{\nleft canary = %x\n", (size_t)stk->data[0]);
+    printf("{\nright canary = %x\n", (size_t)stk->data[stk->capacity + 1]);
 
     printf("array data address %p\n", stk->data);
     printf("capacity = %d\n", stk->capacity);
     printf("size = %d\n", stk->size);
-    printf("array data [%x]\n   {\n ", stk->data);
-    for (int i = 0; i < stk->capacity; i++)
+    printf("array data [%x]\n   {\n ", (size_t)stk->data);
+    for (size_t i = 0; i < stk->capacity; i++)
     {
         if(i < stk->size)
             printf("        * ");
@@ -30,7 +30,7 @@ void dump(Stack* stk ON_DEBUG(, const char* file, const char* func, const int co
     printf("    }\n}");
 }
 
-int errors(Stack* stk)  //я так поняла, что по идее ассерты только здесь, эта функция тормозит все ошибки и все ок
+int check(Stack* stk)  //ассерты только здесь, эта функция тормозит все ошибки и все ок
 {
     assert(stk != nullptr);
     assert(stk->data != nullptr);
@@ -42,28 +42,40 @@ int errors(Stack* stk)  //я так поняла, что по идее ассе�
         return NO_PLACE;
 
     if (stk->size > stk->capacity)
-        return ARRAY_LIMIT_PROBLEM;
+        return OVERFLOW;
 
-    for (int i = 0; i < stk->size; i++)
+    for (size_t i = 0; i < stk->size; i++)
     {
-        if (*(stk->data + i) == 0)  //проверка, конечно, не очень, ведь мы ограничиваем диапазон возможных значений. Можно ли заполнить все нанами или типа того?
-            return FILLING_PROBLEM;
+        if (*(stk->data + i) == POISON)
+            return VALUE_PROBLEM;
     }
+
+    if (stk->hash != stk_hash(stk))
+        return HASH_PROBLEM;
 }
 
-void stack_assert_func(Stack* stk ON_DEBUG(, const char* file, const char* func, const int code_str)) // хочется, чтобы именно эта функция принимала текущее занчение файла и тд
+void stack_assert_func(Stack* stk ADV_POS)
 {
-    if (errors(stk) != ALL_RIGHT)
+    if (check(stk) != ALL_RIGHT)
         dump(stk, file, func, code_str);
 }
 
-void hash(Stack* stk)   //где бы так ее вызвать? в stack_actions? надо выводить оба значения при всех операциях, добавить в errors
+unsigned long long stk_hash(Stack* stk)   //вызвать в stack_actions,добавить проверку в errors
 {
-    unsigned long hash = stk->hash;
-    stack_element_t elem = *(stk->data)
-    while ((&elem)++) //проверить порядок функций
-        hash = hash * 33  + elem;
-    stk->hash = hash;  // надо сохранять и старое и новое, менять их
+    unsigned long long hash = 0;
+    int elem_num = 0;
+    while (elem_num < stk->size)
+    {
+        hash = hash * 33  + *(stk->data + elem_num); //переделать с учетом того, что что тут исключающее или
+        elem_num++;
+    }
+        
+    return hash;
 }
 
+
+called()
+{
+    printf("called from %s: %d (%s)\n", file, code_str, func);
+}
 #endif

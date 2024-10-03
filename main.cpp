@@ -1,26 +1,25 @@
 #include <stdio.h>
 
 #include "check.h"
-#include "ctor.h"
-#include "stack_actions.h"
-
-#define CHECK_ if (!err) err =
+#include "stack.h"
+#include "stack_operations.h"
 
 int main()
 {
     Stack stk = {};
 
-    CTOR(&stk ON_DEBUG(, __FILE__, __LINE__, __func__));
-    
-    bool err = 0;
+    #ifdef DEBUG
+    stk.left_canary = LEFT_CANARY;  //ограждение структуры
+    stk.right_canary = RIGHT_CANARY;
+    #endif
 
-    stack_element_t element = 0;
+    CTOR(&stk);
 
-    CHECK_ push(&stk);
-    CHECK_ push(&stk);
+    enter_element(&stk);
+    enter_element(&stk);
 
-    CHECK_ pop(&stk, &element);
-    CHECK_ pop(&stk, &element);
+    del_element(&stk, &element);
+    del_element(&stk, &element);
 
     dtor(&stk);
 

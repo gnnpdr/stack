@@ -7,20 +7,32 @@
 #define DEBUG
 
 #ifdef DEBUG
-    #define ON_DEBUG(...) __VA_ARGS__
-    #define ASSERT(stk, ...) stack_assert_func(stk __VA_ARGS__);
+    #define ADD_CAP 2
+    #define ADD_IN 1
+    #define LEFT_CANARY 0xC
+    #define RIGHT_CANARY 0xC
+    #define START_HASH 5381
+    #define STRUCT_CAPACITY 3
+    #define POSITION , __FILE__, __func__, __LINE__
+    #define ADV_POS , const char* file, const char* func, const int line
+    #define CHECK(stk) stack_assert_func(stk POSITION)
 #else
-    #define ON_DEBUG(code)
+    #define ADD
+    #define POSITION 
+    #define ADV_POS 
+    //#define ON_DEBUG(code)
 #endif
 
 #ifdef DEBUG
-enum Problem
+enum StkErrors
 {
     ALL_RIGHT,
     NO_PLACE,
-    ARRAY_LIMIT_PROBLEM,
-    FILLING_PROBLEM,
-    NOT_PTR
+    O_VERFLOW,
+    HASH_PROBLEM,
+    VALUE_PROBLEM,
+    NOT_PTR,
+    UNKNOWN
 };
 #endif
 
@@ -29,12 +41,12 @@ typedef double stack_element_t;
 struct Stack
 {
     #ifdef DEBUG
-    const int left_canary = 0xCOOL;  //ошибка, как этим пользоваться? и как бы так сделать, чтобы эта ячейка не менялась
+    const unsigned long long left_canary;
     const char* origin_file;
-    const int* origin_str;
+    int origin_str;
     const char* origin_func;
-    unsigned long hash = 5381;
-    const int right_canary = 0xCOOL;
+    unsigned long hash;
+    const unsigned long long right_canary;
     #endif
 
     stack_element_t* data;
@@ -43,11 +55,11 @@ struct Stack
 };
 
 
-void dump(Stack* stk ON_DEBUG(, const char* file, const char* func, const int code_str));
-int errors(Stack* stk);
+void dump(Stack* stk , const char* file, const char* func, const int code_str);
+int check(Stack* stk);
 
-void stack_assert_func(Stack* stk ON_DEBUG(, const char* file, const char* func, const int code_str));
+void stack_assert_func(Stack* stk, const char* file, const char* func, const int code_str);
 
-unsigned long hash(char *str);
+unsigned long long stk_hash(Stack* stk);
 
 #endif //_CHECK_H_
