@@ -9,17 +9,19 @@ int main()
     Stack stk = {};
 
     #ifdef DEBUG
+    int check_res = ALL_RIGHT;
     stk.left_canary = LEFT_CANARY;  //ограждение структуры
     stk.right_canary = RIGHT_CANARY;
     #endif
 
-    CTOR(&stk);
+    RESULT CTOR(&stk);     //если что-то пойдет не так, то сначала зайдет в assert_func и выпишет проблемы, а потом дойдет до ретерна main
+    ASSERT;
 
-    enter_element(&stk);
-    enter_element(&stk);
+    RESULT enter_element(&stk);
+    ASSERT;
 
-    del_element(&stk, &element);
-    del_element(&stk, &element);
+    RESULT del_element(&stk);
+    ASSERT;
 
     dtor(&stk);
 

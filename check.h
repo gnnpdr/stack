@@ -13,9 +13,12 @@
     #define RIGHT_CANARY 0xC
     #define START_HASH 5381
     #define STRUCT_CAPACITY 3
+    #define POISON 13
     #define POSITION , __FILE__, __func__, __LINE__
-    #define ADV_POS , const char* file, const char* func, const int line
-    #define CHECK(stk) stack_assert_func(stk POSITION)
+    #define ADV_POS , const char* file, const char* func, const int code_str
+    #define CHECK(stk) check(stk)
+    #define ASSERT if(check_res != ALL_RIGHT) dump(&stk POSITION)
+    #define RESULT if(check_res == ALL_RIGHT) check_res = 
 #else
     #define ADD
     #define POSITION 
@@ -28,10 +31,9 @@ enum StkErrors
 {
     ALL_RIGHT,
     NO_PLACE,
-    O_VERFLOW,
+    OVERFLOW_,
     HASH_PROBLEM,
     VALUE_PROBLEM,
-    NOT_PTR,
     UNKNOWN
 };
 #endif
@@ -41,12 +43,12 @@ typedef double stack_element_t;
 struct Stack
 {
     #ifdef DEBUG
-    const unsigned long long left_canary;
+    unsigned long long left_canary;
     const char* origin_file;
     int origin_str;
     const char* origin_func;
-    unsigned long hash;
-    const unsigned long long right_canary;
+    unsigned long long hash;
+    unsigned long long right_canary;
     #endif
 
     stack_element_t* data;
@@ -55,10 +57,10 @@ struct Stack
 };
 
 
-void dump(Stack* stk , const char* file, const char* func, const int code_str);
-int check(Stack* stk);
+void dump(Stack* stk ADV_POS);
+StkErrors check(Stack* stk);
 
-void stack_assert_func(Stack* stk, const char* file, const char* func, const int code_str);
+void stack_assert_func(Stack* stk ADV_POS);
 
 unsigned long long stk_hash(Stack* stk);
 

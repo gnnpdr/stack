@@ -7,17 +7,10 @@
 
 #define AMOUNT 5
 #define DELTA 2
-#define POISON 13
 
 #define CTOR(stk) ctor(stk POSITION)
 
-void ctor(Stack* stk ADV_POS);
-
-void change_capacity(Stack* stk);
-void more_capacity(Stack* stk);
-void less_capacity(Stack* stk);
-
-void cool_realloc(Stack* stk);
+StkErrors ctor(Stack* stk ADV_POS);
 
 void dtor(Stack* stk);
 

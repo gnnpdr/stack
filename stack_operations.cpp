@@ -2,25 +2,29 @@
 
 #include "stack_operations.h"
 
-enter_element(Stack* stk)
+StkErrors enter_element(Stack* stk)
 {
-    printf("bro, what do you want to add to this cool stack??!\n");
+    StkErrors check_res = ALL_RIGHT;
+
+    printf("what do you want to add?\n");
     stack_element_t element = 0;
-    scanf("%ld", &element);
+    scanf("%lg", &element);
 
     size_t amount = 0;
-    printf("how many times, buddy?\n");
+    printf("how many times?\n");
     scanf("%d", &amount);
 
     for (size_t i = 0; i < amount; i++)
     {
-        check_capacity(stk); //проверка доступной памяти
-        push(stk, element);  //добавление элемента
-        check_hash();        //пересчет хэша
+        RESULT check_capacity(stk); //проверка доступной памяти, выделение при необходимости
+        RESULT push(stk, element);  //добавление элемента
+        RESULT check_hash(stk);     //пересчет хэша
     }
+
+    return check_res;
 }
 
-check_capacity(Stack* stk)
+StkErrors check_capacity(Stack* stk)
 {
     size_t size = stk->size;
     size_t capacity = stk->capacity;
@@ -28,68 +32,67 @@ check_capacity(Stack* stk)
 
     if (size == capacity)
     {
-        start_prt[capacity + 1] = POISON;  //убрали канарейку
+        memset(start_ptr + capacity, POISON, capacity + ADD_IN);  //проставили пойсон в новые ячейки, убрали канарейку
         capacity = capacity * DELTA;
-        stk->capacity = capacity;          //изменение параметра объема
-        memset(start_ptr + capacity + ADD_IN, POISON, capacity);
     }
 
     else if (size == capacity/4)
     {
         capacity = capacity/DELTA;
-        stk->capacity = capacity;
         memset(stk->data + capacity + ADD_IN, 0, capacity + ADD_IN); //очистить в нули то, что осталось от стэка - канарейку и пойсон
     }
 
-    
-
     start_ptr = (stack_element_t*)realloc(start_ptr, capacity*sizeof(stack_element_t));  //изменили объем массива
+    if (start_ptr == nullptr)
+    {
+        printf("no place for arrays\n");
+        return NO_PLACE;        //делаем проверку отдельно, не через чек, тк не хотим в структуру фигню писать
+    }
+        
+    start_ptr[capacity + ADD_IN] = LEFT_CANARY;  //поставили канарейку
+
+    stk->capacity = capacity;          //изменение значений в структуре
+    stk->data = start_ptr;
     
-    CHECK();   //стоит?
-    stk->data = ptr;
-    stk->data[capacity + 1] = LEFT_CANARY;  //поставили канарейку
-    CHECK(stk);  //главным образом на канарейки и и размер, те найдено ли место, все дела 
+    return CHECK(stk);  //проверка на канарейки и и размер, те найдено ли место, все дела 
 }
 
-check_hash(Stack* stk)
+StkErrors check_hash(Stack* stk)
 {
     stk->hash = stk_hash(stk);
-    CHECK;
+    return CHECK(stk);
 }
 
-int push(Stack* stk, stack_element_t element)
+StkErrors push(Stack* stk, stack_element_t element)
 {
-    CHECK(stk);
-
     stk->size++;
-    stk->data[stk->size] = element; //сделать поправку на канарейку
+    stk->data[stk->size + ADD_IN] = element;
 
-    CHECK(stk);
+    return CHECK(stk);                       //проверка была в другой функции, так что здесь поставим только в конце
 }
 
-del_element()
+StkErrors del_element(Stack* stk)
 {
-    size_t amount = 0;
+    StkErrors check_res = ALL_RIGHT;
 
-    printf("how much&\n");
+    size_t amount = 0;
+    printf("how many elements do you want to del?\n");
     scanf("%d", &amount);
 
     for (size_t i = 0; i < amount; i++)
     {
-        check_capacity();
-        pop();
-        check_hash();
-        CHECK();
+        RESULT check_capacity(stk); //проверка доступной памяти, выделение при необходимости
+        RESULT pop(stk);            //удаление элемента
+        RESULT check_hash(stk);     //пересчет хэша
     }
+    
+    return check_res;
 }
 
-int pop(Stack* stk, stack_element_t* output)
+StkErrors pop(Stack* stk)
 {
-    CHECK(stk);
-
     stk->data[stk->size] = POISON;
     stk->size--;
 
-    CHECK(stk);
+    return CHECK(stk);
 }
-

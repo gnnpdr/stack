@@ -3,7 +3,11 @@
 
 #include "stack.h"
 
-int push(Stack* stk);
-int pop(Stack* stk, stack_element_t* output);
+StkErrors enter_element(Stack* stk);
+StkErrors check_capacity(Stack* stk);
+StkErrors check_hash(Stack* stk);
+StkErrors push(Stack* stk, stack_element_t element);
+StkErrors del_element(Stack* stk);
+StkErrors pop(Stack* stk);
 
 #endif //_PUSH_H_
