@@ -10,7 +10,7 @@
 
 #define CTOR(stk) ctor(stk POSITION)
 
-StkErrors ctor(Stack* stk ADV_POS);
+StkErrors ctor(Stack* stk, const char* file, const char* func, const int code_str);
 
 void dtor(Stack* stk);
 

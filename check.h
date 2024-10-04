@@ -12,18 +12,27 @@
     #define LEFT_CANARY 0xC00F
     #define RIGHT_CANARY 0xC00F
     #define START_HASH 5381
-    #define STRUCT_CAPACITY 3
     #define POISON 13
+
+    #define CHECK_FUNC(func)    do                        \
+                                {                         \
+                                    if(func != ALL_RIGHT) \
+                                        return 0;         \
+                                } while (0);
+
+    #define ASSERT_STK(stk)     do                              \
+                                {                               \
+                                    if(check(stk) != ALL_RIGHT) \
+                                    {                           \
+                                        dump(stk POSITION);     \
+                                        return PROBLEM;         \
+                                    }                           \
+                                } while (0);
+
     #define POSITION , __FILE__, __func__, __LINE__
-    #define ADV_POS , const char* file, const char* func, const int code_str
-    #define CHECK(stk) check(stk)
-    #define ASSERT if(check_res != ALL_RIGHT) dump(&stk POSITION)
-    #define RESULT if(check_res == ALL_RIGHT) check_res = 
 #else
     #define ADD
-    #define POSITION 
-    #define ADV_POS 
-    //#define ON_DEBUG(code)
+    #define POSITION
 #endif
 
 #ifdef DEBUG
@@ -31,6 +40,7 @@ enum StkErrors
 {
     ALL_RIGHT,
     NO_PLACE,
+    PROBLEM,
     BUFFER_OVERFLOW,
     HASH_PROBLEM,
     VALUE_PROBLEM,
@@ -57,10 +67,10 @@ struct Stack
 };
 
 
-void dump(Stack* stk ADV_POS);
+void dump(Stack* stk, const char* file, const char* func, const int code_str);
 StkErrors check(Stack* stk);
 
-void stack_assert_func(Stack* stk ADV_POS);
+void stack_assert_func(Stack* stk, const char* file, const char* func, const int code_str);
 
 unsigned long long stk_hash(Stack* stk);
 

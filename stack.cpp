@@ -2,7 +2,7 @@
 
 #include "stack.h"
 
-StkErrors ctor(Stack* stk ADV_POS)
+StkErrors ctor(Stack* stk, const char* file, const char* func, const int code_str)
 {
     #ifdef DEBUG
     stk->origin_file = file;
@@ -32,7 +32,9 @@ StkErrors ctor(Stack* stk ADV_POS)
 
     stk->data = start_ptr; //сначала делаем все нужное в памяти, а потом просто присваеваем этот кусок элементу структуры
 
-    return CHECK(stk);
+    ASSERT_STK(stk)
+
+    return ALL_RIGHT;
 }
 
 void dtor(Stack* stk)

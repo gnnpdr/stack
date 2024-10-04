@@ -2,7 +2,7 @@
 
 #include "check.h"
 
-void dump(Stack* stk ADV_POS)
+void dump(Stack* stk, const char* file, const char* func, const int code_str)
 {
     stack_element_t* start_ptr = stk->data;
     size_t size = stk->size;
@@ -34,7 +34,7 @@ void dump(Stack* stk ADV_POS)
     printf(" }\n}");
 }
 
-StkErrors check(Stack* stk)  //ассерты только здесь, эта функция тормозит все ошибки и все ок
+StkErrors check(Stack* stk)
 {
     assert(stk != nullptr);
     assert(stk->data != nullptr);
@@ -78,11 +78,11 @@ unsigned long long stk_hash(Stack* stk)
     unsigned long long hash = START_HASH;
     stack_element_t* start_ptr = stk->data;
     size_t size = stk->size;
-    int elem_num = 0;
+    size_t elem_num = 0;
 
     while (elem_num < size)
     {
-        hash = hash * 33  + start_ptr[elem_num  + ADD_IN];
+        hash = hash * 33  + (unsigned long long)start_ptr[elem_num  + ADD_IN];
         elem_num++;
     }
 

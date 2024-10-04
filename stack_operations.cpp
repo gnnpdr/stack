@@ -4,7 +4,8 @@
 
 StkErrors enter_element(Stack* stk)
 {
-    StkErrors check_res = ALL_RIGHT;
+    ASSERT_STK(stk)
+    
 
     printf("what do you want to add?\n");
     stack_element_t element = 0;
@@ -15,23 +16,26 @@ StkErrors enter_element(Stack* stk)
     scanf("%d", &amount);
 
     for (size_t i = 0; i < amount; i++)
-        RESULT push(stk, element);
+        push(stk, element);
 
-    return check_res;
+    ASSERT_STK(stk)
+
+    return ALL_RIGHT;
+
 }
 
 StkErrors push(Stack* stk, stack_element_t element)
 {
-    int check_res = ALL_RIGHT;
+    ASSERT_STK(stk)
+    
     size_t size = stk->size;
     size_t capacity = stk->capacity;
     
-    stack_element_t* start_ptr = stk->data;
 
     if (size >= capacity)
     {
         size_t new_capacity = capacity * DELTA;
-        RESULT change_capacity(stk, new_capacity, capacity);
+        change_capacity(stk, new_capacity, capacity);
     }
 
     stk->data[stk->size + ADD_IN] = element;
@@ -40,12 +44,15 @@ StkErrors push(Stack* stk, stack_element_t element)
     //printf("push\n");
     check_hash(stk);
 
-    return CHECK(stk);                       //проверка была в другой функции, так что здесь поставим только в конце
+    ASSERT_STK(stk)
+
+    return ALL_RIGHT;
 }
 
 StkErrors change_capacity(Stack* stk, size_t new_capacity, size_t capacity)
 {
-    size_t size = stk->size;
+    ASSERT_STK(stk)
+
     stack_element_t* start_ptr = stk->data;
 
     start_ptr = (stack_element_t*)realloc(start_ptr, (new_capacity + ADD_CAP)*sizeof(stack_element_t));
@@ -69,7 +76,9 @@ StkErrors change_capacity(Stack* stk, size_t new_capacity, size_t capacity)
     stk->capacity = new_capacity;
     stk->data = start_ptr;
 
-    return CHECK(stk);
+    ASSERT_STK(stk)
+
+    return ALL_RIGHT;
 }
 
 void check_hash(Stack* stk)  //!!!!!!!!!!
@@ -80,24 +89,24 @@ void check_hash(Stack* stk)  //!!!!!!!!!!
 
 StkErrors del_element(Stack* stk)
 {
-    StkErrors check_res = ALL_RIGHT;
+    ASSERT_STK(stk)
 
     size_t amount = 0;
     printf("how many elements do you want to del?\n");
     scanf("%d", &amount);
-
-    //printf("cap 1 cap %d stk %d\n", capacity, stk->capacity);
-
-    for (size_t i = 0; i < amount; i++)
-        RESULT pop(stk);
     
-    return check_res;
+    for (size_t i = 0; i < amount; i++)
+        pop(stk);
+    
+    ASSERT_STK(stk)
+
+    return ALL_RIGHT;
 }
 
 StkErrors pop(Stack* stk)
 {
-    
-    int check_res = ALL_RIGHT;
+    ASSERT_STK(stk)
+
     size_t size = stk->size;
     size_t capacity = stk->capacity;
     stack_element_t* start_ptr = stk->data;
@@ -105,7 +114,7 @@ StkErrors pop(Stack* stk)
     if (size <= capacity / 4)
     {
         size_t new_capacity = capacity / DELTA;
-        RESULT change_capacity(stk, new_capacity, capacity);
+        change_capacity(stk, new_capacity, capacity);
     }
 
     
@@ -114,5 +123,7 @@ StkErrors pop(Stack* stk)
 
     check_hash(stk);
 
-    return CHECK(stk);
+    ASSERT_STK(stk)
+
+    return ALL_RIGHT;
 }

@@ -9,23 +9,18 @@ int main()
     Stack stk = {};
 
     #ifdef DEBUG
-    int check_res = ALL_RIGHT;
     stk.left_canary = LEFT_CANARY;
     stk.right_canary = RIGHT_CANARY;
     stk.hash = START_HASH;
     #endif
 
-    RESULT CTOR(&stk);     //надо так сделать, чтобы чек получал строчку, а дамп выводил ее
-    dump(&stk POSITION);
+    CHECK_FUNC(CTOR(&stk))
 
-    RESULT enter_element(&stk);
-    dump(&stk POSITION);
+    CHECK_FUNC(enter_element(&stk))
 
-    RESULT del_element(&stk);
-    dump(&stk POSITION);
+    CHECK_FUNC(del_element(&stk))
 
     dtor(&stk);
 
-    ASSERT;
     return 0;
 }
