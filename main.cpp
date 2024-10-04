@@ -12,18 +12,20 @@ int main()
     int check_res = ALL_RIGHT;
     stk.left_canary = LEFT_CANARY;  //ограждение структуры
     stk.right_canary = RIGHT_CANARY;
+    stk.hash = START_HASH;
     #endif
 
-    RESULT CTOR(&stk);     //если что-то пойдет не так, то сначала зайдет в assert_func и выпишет проблемы, а потом дойдет до ретерна main
-    ASSERT;
+    RESULT CTOR(&stk);     //надо так сделать, чтобы чек получал строчку, а дамп выводил ее
+    dump(&stk POSITION);
 
     RESULT enter_element(&stk);
-    ASSERT;
+    dump(&stk POSITION);
 
     RESULT del_element(&stk);
-    ASSERT;
+    dump(&stk POSITION);
 
     dtor(&stk);
 
+    ASSERT;
     return 0;
 }

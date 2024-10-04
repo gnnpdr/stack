@@ -9,5 +9,6 @@ StkErrors check_hash(Stack* stk);
 StkErrors push(Stack* stk, stack_element_t element);
 StkErrors del_element(Stack* stk);
 StkErrors pop(Stack* stk);
+StkErrors change_capacity(Stack* stk);
 
 #endif //_PUSH_H_

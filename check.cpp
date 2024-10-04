@@ -13,8 +13,8 @@ void dump(Stack* stk ADV_POS)
     printf("called from %s: %d (%s)\n", file, code_str, func);
     printf("name stk born at %s: %d (%s)\n", stk->origin_file, stk->origin_str, stk->origin_func);
 
-    printf("{\nleft canary = %x\n", (size_t)start_ptr[0]);
-    printf("{\nright canary = %x\n", (size_t)start_ptr[capacity + ADD_IN]);
+    printf("\nleft canary = %x\n", (size_t)start_ptr[0]);
+    printf("right canary = %x\n\n", (size_t)start_ptr[capacity + ADD_IN]);
 
     printf("array data address %p\n", start_ptr);
     printf("capacity = %d\n", capacity);
@@ -25,8 +25,11 @@ void dump(Stack* stk ADV_POS)
         if(i < size)
             printf(" * ");
         else
-            printf("  ");
-        printf("[%d] = %lf\n", i, start_ptr[i]);
+            printf("   ");
+        if (start_ptr[i + ADD_IN] == POISON)
+            printf("[%d] = %d (POISION)\n", i, POISON);
+        else
+            printf("[%d] = %lf\n", i, start_ptr[i + ADD_IN]);
     }
     printf(" }\n}");
 }
@@ -68,14 +71,9 @@ StkErrors check(Stack* stk)  //ассерты только здесь, эта ф
 
     return ALL_RIGHT;
 }
-/*
-void stack_assert_func(Stack* stk ADV_POS)
-{
-    if (check(stk) != ALL_RIGHT)
-        dump(stk, file, func, code_str);
-}
-*/
-unsigned long long stk_hash(Stack* stk)   //вызвать в stack_actions,добавить проверку в errors
+
+
+unsigned long long stk_hash(Stack* stk)
 {
     unsigned long long hash = START_HASH;
     stack_element_t* start_ptr = stk->data;
@@ -87,6 +85,6 @@ unsigned long long stk_hash(Stack* stk)   //вызвать в stack_actions,до
         hash = hash * 33  + start_ptr[elem_num  + ADD_IN];
         elem_num++;
     }
-        
+
     return hash;
 }

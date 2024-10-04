@@ -19,15 +19,15 @@ StkErrors ctor(Stack* stk ADV_POS)
     if (start_ptr == nullptr)
     {
         printf("no place for arrays\n");   //пропишем здесь, тк после этого вернутся в main, обходя assert_func, где должна былаа вывестись надпись
-        return NO_PLACE;        //делаем проверку отдельно, не через чек, тк не хотим в структуру фигню писать
+        return NO_PLACE;                   //делаем проверку отдельно, не через чек, тк не хотим в структуру фигню писать
     }
         
+    memset(start_ptr + ADD_IN, 13, capacity);  //почему не работает?
+
     #ifdef DEBUG
     start_ptr[0] = LEFT_CANARY;
     start_ptr[capacity + ADD_IN] = RIGHT_CANARY;
     #endif
-
-    memset(start_ptr + ADD_IN, POISON, capacity);
 
     stk->data = start_ptr; //сначала делаем все нужное в памяти, а потом просто присваеваем этот кусок элементу структуры
 
