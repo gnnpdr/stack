@@ -9,8 +9,8 @@
 #ifdef DEBUG
     #define ADD_CAP 2
     #define ADD_IN 1
-    #define LEFT_CANARY 0xC
-    #define RIGHT_CANARY 0xC
+    #define LEFT_CANARY 0xC00F
+    #define RIGHT_CANARY 0xC00F
     #define START_HASH 5381
     #define STRUCT_CAPACITY 3
     #define POISON 13
@@ -31,7 +31,7 @@ enum StkErrors
 {
     ALL_RIGHT,
     NO_PLACE,
-    OVERFLOW_,
+    BUFFER_OVERFLOW,
     HASH_PROBLEM,
     VALUE_PROBLEM,
     UNKNOWN

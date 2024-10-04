@@ -8,7 +8,7 @@ void dump(Stack* stk ADV_POS)
     size_t size = stk->size;
     size_t capacity = stk->capacity;
 
-    printf("Stack [%x]\n", (size_t)stk);  //???
+    printf("Stack [%x]\n", (size_t)stk);
 
     printf("called from %s: %d (%s)\n", file, code_str, func);
     printf("name stk born at %s: %d (%s)\n", stk->origin_file, stk->origin_str, stk->origin_func);
@@ -27,7 +27,7 @@ void dump(Stack* stk ADV_POS)
         else
             printf("   ");
         if (start_ptr[i + ADD_IN] == POISON)
-            printf("[%d] = %d (POISION)\n", i, POISON);
+            printf("[%d] = %d (POISON)\n", i, POISON);
         else
             printf("[%d] = %lf\n", i, start_ptr[i + ADD_IN]);
     }
@@ -51,14 +51,14 @@ StkErrors check(Stack* stk)  //ассерты только здесь, эта ф
     if (stk->size > stk->capacity)
     {
         printf("program crossed the line\n");
-        return OVERFLOW_;
+        return BUFFER_OVERFLOW;
     }
         
     for (size_t i = 0; i < size; i++)
     {
         if (start_ptr[i] == POISON)
         {
-            printf("elements were not add\n");  //может возникнуть проблема при смене размера (уменьшение)?
+            printf("elements were not add\n");
             return VALUE_PROBLEM;
         }
     }

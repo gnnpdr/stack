@@ -10,7 +10,7 @@ int main()
 
     #ifdef DEBUG
     int check_res = ALL_RIGHT;
-    stk.left_canary = LEFT_CANARY;  //ограждение структуры
+    stk.left_canary = LEFT_CANARY;
     stk.right_canary = RIGHT_CANARY;
     stk.hash = START_HASH;
     #endif

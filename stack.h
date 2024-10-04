@@ -5,7 +5,7 @@
 #include <string.h>
 #include "check.h"
 
-#define AMOUNT 5
+#define AMOUNT 6
 #define DELTA 2
 
 #define CTOR(stk) ctor(stk POSITION)

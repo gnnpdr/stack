@@ -15,74 +15,67 @@ StkErrors enter_element(Stack* stk)
     scanf("%d", &amount);
 
     for (size_t i = 0; i < amount; i++)
-    {
-        RESULT check_capacity(stk); //проверка доступной памяти, выделение при необходимости
-        RESULT push(stk, element);  //добавление элемента
-    }
+        RESULT push(stk, element);
 
     return check_res;
 }
 
-StkErrors check_capacity(Stack* stk)
+StkErrors push(Stack* stk, stack_element_t element)
 {
     int check_res = ALL_RIGHT;
     size_t size = stk->size;
     size_t capacity = stk->capacity;
+    
     stack_element_t* start_ptr = stk->data;
 
-    if (size == capacity)
+    if (size >= capacity)
     {
-        memset(start_ptr + capacity, POISON, capacity + ADD_IN);  //проставили пойсон в новые ячейки, убрали канарейку
-        capacity = capacity * DELTA;
-        RESULT change_capacity(stk);
+        size_t new_capacity = capacity * DELTA;
+        RESULT change_capacity(stk, new_capacity, capacity);
     }
 
-    else if (size == capacity/4)
-    {
-        capacity = capacity/DELTA;
-        memset(stk->data + capacity + ADD_IN, 0, capacity + ADD_IN); //очистить в нули то, что осталось от стэка - канарейку и пойсон
-        RESULT change_capacity(stk);
-    }
+    stk->data[stk->size + ADD_IN] = element;
+    stk->size++;
 
-    return CHECK(stk);  //проверка на канарейки и и размер, те найдено ли место, все дела 
+    //printf("push\n");
+    check_hash(stk);
+
+    return CHECK(stk);                       //проверка была в другой функции, так что здесь поставим только в конце
 }
 
-
-StkErrors change_capacity(Stack* stk)
+StkErrors change_capacity(Stack* stk, size_t new_capacity, size_t capacity)
 {
     size_t size = stk->size;
-    size_t capacity = stk->capacity;
     stack_element_t* start_ptr = stk->data;
 
-    start_ptr = (stack_element_t*)realloc(start_ptr, capacity*sizeof(stack_element_t));  //изменили объем массива
+    start_ptr = (stack_element_t*)realloc(start_ptr, (new_capacity + ADD_CAP)*sizeof(stack_element_t));
     if (start_ptr == nullptr)
     {
-        printf("no place for arrays\n");
-        return NO_PLACE;        //делаем проверку отдельно, не через чек, тк не хотим в структуру фигню писать
+        printf("no place\n");
+        return NO_PLACE;
     }
-        
-    start_ptr[capacity + ADD_IN] = LEFT_CANARY;  //поставили канарейку
 
-    stk->capacity = capacity;          //изменение значений в структуре
+    //в случае увеличения
+    if (new_capacity > capacity)
+    {
+        for (size_t i = 0; i < capacity + ADD_IN; i++)
+            start_ptr[capacity + ADD_IN + i] = POISON;
+    }
+    else 
+        memset(start_ptr + new_capacity + ADD_CAP, 0, new_capacity + ADD_IN);
+    
+    start_ptr[new_capacity + ADD_IN] = LEFT_CANARY;
+
+    stk->capacity = new_capacity;
     stk->data = start_ptr;
 
     return CHECK(stk);
 }
 
-StkErrors check_hash(Stack* stk)
+void check_hash(Stack* stk)  //!!!!!!!!!!
 {
     stk->hash = stk_hash(stk);
-    return CHECK(stk);
-}
 
-StkErrors push(Stack* stk, stack_element_t element)
-{
-    stk->data[stk->size + ADD_IN] = element;
-    stk->size++;
-
-    check_hash(stk);
-
-    return CHECK(stk);                       //проверка была в другой функции, так что здесь поставим только в конце
 }
 
 StkErrors del_element(Stack* stk)
@@ -93,18 +86,30 @@ StkErrors del_element(Stack* stk)
     printf("how many elements do you want to del?\n");
     scanf("%d", &amount);
 
+    //printf("cap 1 cap %d stk %d\n", capacity, stk->capacity);
+
     for (size_t i = 0; i < amount; i++)
-    {
-        RESULT check_capacity(stk); //проверка доступной памяти, выделение при необходимости
-        RESULT pop(stk);            //удаление элемента
-    }
+        RESULT pop(stk);
     
     return check_res;
 }
 
 StkErrors pop(Stack* stk)
 {
-    stk->data[stk->size] = POISON;
+    
+    int check_res = ALL_RIGHT;
+    size_t size = stk->size;
+    size_t capacity = stk->capacity;
+    stack_element_t* start_ptr = stk->data;
+
+    if (size <= capacity / 4)
+    {
+        size_t new_capacity = capacity / DELTA;
+        RESULT change_capacity(stk, new_capacity, capacity);
+    }
+
+    
+    start_ptr[size] = POISON;
     stk->size--;
 
     check_hash(stk);

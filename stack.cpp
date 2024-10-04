@@ -21,8 +21,9 @@ StkErrors ctor(Stack* stk ADV_POS)
         printf("no place for arrays\n");   //пропишем здесь, тк после этого вернутся в main, обходя assert_func, где должна былаа вывестись надпись
         return NO_PLACE;                   //делаем проверку отдельно, не через чек, тк не хотим в структуру фигню писать
     }
-        
-    memset(start_ptr + ADD_IN, 13, capacity);  //почему не работает?
+    
+    for (size_t i = 0; i < capacity; i++)
+        start_ptr[i + ADD_IN] = POISON;
 
     #ifdef DEBUG
     start_ptr[0] = LEFT_CANARY;
