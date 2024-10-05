@@ -20,7 +20,12 @@ void dump(Stack* stk, const char* file, const char* func, const int code_str)
     printf("capacity = %d\n", capacity);
     printf("size = %d\n", size);
     printf("array data [%x]\n{\n", (size_t)start_ptr);
+    print_stk_elements(start_ptr, capacity, size);
+    
+}
 
+void print_stk_elements(stack_element_t* start_ptr, size_t capacity, size_t size)
+{
     for (size_t i = 0; i < capacity; i++)
     {
         if(i < size)
@@ -99,6 +104,5 @@ unsigned long long stk_hash(Stack* stk)
         hash = hash * 33  + (unsigned long long)start_ptr[elem_num  + LEFT_CANARY_ADD];
         elem_num++;
     }
-
     return hash;
 }

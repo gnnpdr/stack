@@ -2,6 +2,7 @@
 
 #include "check.h"
 #include "stack.h"
+#include "user.h"
 #include "stack_operations.h"
 
 int main()
@@ -17,12 +18,9 @@ int main()
     CHECK_FUNC(CTOR(&stk))
 
     CHECK_FUNC(enter_element(&stk))
-    //dump(&stk POSITION);
-
-    //stk.data[3] = 4;
 
     CHECK_FUNC(del_element(&stk))
-    //dump(&stk POSITION);
+    dump(&stk POSITION);
 
     dtor(&stk);
 

@@ -2,31 +2,11 @@
 
 #include "stack_operations.h"
 
-StkErrors enter_element(Stack* stk)
-{
-    ASSERT_STK(stk)
-
-    printf("what do you want to add?\n");
-    stack_element_t element = 0;
-    scanf("%lg", &element);
-
-    size_t amount = 0;
-    printf("how many times?\n");
-    scanf("%d", &amount);
-
-    for (size_t i = 0; i < amount; i++)
-        CHECK_FUNC(push(stk, element))
-
-    ASSERT_STK(stk)
-
-    return ALL_RIGHT;
-
-}
-
 StkErrors push(Stack* stk, stack_element_t element)
 {
     ASSERT_STK(stk)
-    
+
+    stack_element_t* start_ptr = stk->data;
     size_t size = stk->size;
     size_t capacity = stk->capacity;
 
@@ -36,13 +16,12 @@ StkErrors push(Stack* stk, stack_element_t element)
         CHECK_FUNC(change_capacity(stk, new_capacity, capacity))
     }
 
-    stk->data[stk->size + LEFT_CANARY_ADD] = element;
-    stk->size++;
-
+    start_ptr[size + LEFT_CANARY_ADD] = element;
+    size++;
+    stk->size = size;
     stk->hash = stk_hash(stk);
 
     ASSERT_STK(stk)
-
     return ALL_RIGHT;
 }
 
@@ -73,23 +52,6 @@ StkErrors change_capacity(Stack* stk, size_t new_capacity, size_t capacity)
     stk->data = start_ptr;
 
     ASSERT_STK(stk)
-
-    return ALL_RIGHT;
-}
-
-StkErrors del_element(Stack* stk)
-{
-    ASSERT_STK(stk)
-
-    size_t amount = 0;
-    printf("how many elements do you want to del?\n");
-    scanf("%d", &amount);
-
-    for (size_t i = 0; i < amount; i++)
-        CHECK_FUNC(pop(stk))
-
-    ASSERT_STK(stk)
-
     return ALL_RIGHT;
 }
 
@@ -108,11 +70,10 @@ StkErrors pop(Stack* stk)
     }
     
     start_ptr[size] = poison;
-    stk->size--;
-
+    size--;
+    stk->size = size;
     stk->hash = stk_hash(stk);
 
     ASSERT_STK(stk)
-
     return ALL_RIGHT;
 }

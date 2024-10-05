@@ -16,9 +16,9 @@ typedef double stack_element_t;
     #define CANARY_CAPACITY_ADD 2
     #define LEFT_CANARY_ADD 1
 
-    #define CHECK_FUNC(func)    do                        \
-                                {                         \
-                                    if(func != ALL_RIGHT) \
+    #define CHECK_FUNC(func)    do                              \
+                                {                               \
+                                    if(func != ALL_RIGHT)       \
                                         return PROBLEM;         \
                                 } while(0);
 
@@ -71,6 +71,7 @@ struct Stack
 
 
 void dump(Stack* stk, const char* file, const char* func, const int code_str);
+void print_stk_elements(stack_element_t* start_ptr, size_t capacity, size_t size);
 StkErrors check(Stack* stk);
 
 void stack_assert_func(Stack* stk, const char* file, const char* func, const int code_str);
