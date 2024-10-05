@@ -2,45 +2,107 @@
 
 #include "check.h"
 
-void dump(Stack* stk)
+void dump(Stack* stk, const char* file, const char* func, const int code_str)
 {
-    assert(stk != nullptr);
+    stack_element_t* start_ptr = stk->data;
+    size_t size = stk->size;
+    size_t capacity = stk->capacity;
 
-    printf("array data address %p\n", stk->data);
+    printf("Stack [%x]\n", (size_t)stk);
 
-    printf("capacity %d\n", stk->capacity);
+    printf("called from %s: %d (%s)\n", file, code_str, func);
+    printf("name stk born at %s: %d (%s)\n", stk->origin_file, stk->origin_str, stk->origin_func);
 
-    for (int i = 0; i < stk->size; i++)
-    {
-        printf("element №%d value %lf\n", i, stk->data[i]);
-        printf("element №%d address %p\n", i, stk->data + i);
-    }
+    printf("\nleft canary = %x\n", (size_t)start_ptr[0]);
+    printf("right canary = %x\n\n", (size_t)start_ptr[capacity + LEFT_CANARY_ADD]);
+
+    printf("array data address %p\n", start_ptr);
+    printf("capacity = %d\n", capacity);
+    printf("size = %d\n", size);
+    printf("array data [%x]\n{\n", (size_t)start_ptr);
+    print_stk_elements(start_ptr, capacity, size);
+    
 }
 
-int errors(Stack* stk)
+void print_stk_elements(stack_element_t* start_ptr, size_t capacity, size_t size)
+{
+    for (size_t i = 0; i < capacity; i++)
+    {
+        if(i < size)
+            printf(" * ");
+        else
+            printf("   ");
+        if (start_ptr[i + LEFT_CANARY_ADD] == poison)
+            printf("[%d] = %lg (POISON)\n", i, poison);
+        else
+            printf("[%d] = %lf\n", i, start_ptr[i + LEFT_CANARY_ADD]);
+    }
+    printf(" }\n}");
+}
+
+StkErrors check(Stack* stk)
 {
     assert(stk != nullptr);
+    assert(stk->data != nullptr);
 
-    if (stk->capacity <= 0)
+    size_t size = stk->size;
+    size_t capacity = stk->capacity;
+    stack_element_t* start_ptr = stk->data;
+
+    if (stk == nullptr)
+    {
+        printf("no place for arrays\n");
         return NO_PLACE;
+    }
 
     if (stk->size > stk->capacity)
-        return ARRAY_LIMIT_PROBLEM;
-
-    for (int i = 0; i < stk->size; i++)
     {
-        if (*(stk->data + i) == 0)  //проверка, конечно, не очень, ведь мы ограничиваем диапазон возможных значений. Можно ли заполнить все нанами или типа того?
-            return FILLING_PROBLEM;
+        printf("program crossed the line\n");
+        return BUFFER_OVERFLOW;
     }
+        
+    for (size_t i = 0; i < size; i++)
+    {
+        if (start_ptr[i] == poison)
+        {
+            printf("elements were not add\n");
+            return VALUE_PROBLEM;
+        }
+    }
+
+    if(start_ptr[0] != left_canary_value)
+    {
+        printf("problem in left canary\n");
+        return PROBLEM;
+    }
+
+    if(start_ptr[capacity + LEFT_CANARY_ADD] != right_canary_value)
+    {
+        printf("problem in right canary\n");
+        return PROBLEM;
+    }
+
+    if (stk->hash != stk_hash(stk))
+    {
+        printf("strange rearrangement in the array, hash is incorrect\n");
+        return HASH_PROBLEM;
+    }
+
+    return ALL_RIGHT;
 }
 
-void stack_assert_func(Stack* stk) // про местоположение в коде не поняла, как рассмотреть весь код как файл через аргументы?
-{
-    assert(stk != nullptr);
 
-    if (errors(stk) != ALL_RIGHT)
+unsigned long long stk_hash(Stack* stk)
+{
+    unsigned long long hash = start_hash;
+    stack_element_t* start_ptr = stk->data;
+    size_t size = stk->size;
+    size_t elem_num = 0;
+
+    while (elem_num < size)
     {
-        dump(stk);
-        assert(0);                  //я прописала конкретные проблемы в enum, как это можно использовать? как код ошибки?
+        hash = hash * 33  + (unsigned long long)start_ptr[elem_num  + LEFT_CANARY_ADD];
+        elem_num++;
     }
+    return hash;
 }

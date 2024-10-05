@@ -1,26 +1,26 @@
 #include <stdio.h>
 
 #include "check.h"
-#include "ctor.h"
-#include "stack_actions.h"
-
-#define CHECK_ if (!err) err =
+#include "stack.h"
+#include "user.h"
+#include "stack_operations.h"
 
 int main()
 {
     Stack stk = {};
-    
-    ctor(&stk);
-    
-    bool err = 0;
 
-    stack_element_t element = 0;
+    #ifdef DEBUG
+    stk.left_canary = left_canary_value;
+    stk.right_canary = right_canary_value;
+    stk.hash = start_hash;
+    #endif
 
-    CHECK_ push(&stk);
-    CHECK_ push(&stk);
+    CHECK_FUNC(CTOR(&stk))
 
-    CHECK_ pop(&stk, &element);
-    CHECK_ pop(&stk, &element);
+    CHECK_FUNC(enter_element(&stk))
+
+    CHECK_FUNC(del_element(&stk))
+    dump(&stk POSITION);
 
     dtor(&stk);
 
