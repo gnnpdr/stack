@@ -7,8 +7,8 @@ StkErrors enter_element(Stack* stk)
     ASSERT_STK(stk)
 
     printf("what do you want to add?\n");
-    stack_element_t element = 0;
-    scanf("%lg", &element);
+    int element = 0;
+    scanf("%d", &element);
 
     size_t amount = 0;
     printf("how many times?\n");

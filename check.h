@@ -10,8 +10,8 @@ typedef double stack_element_t;
 
 #ifdef DEBUG
     static const stack_element_t poison = 13;
-    static const unsigned long long left_canary_value = 0xC00F;
-    static const unsigned long long right_canary_value = 0xC00F;
+    static const unsigned long long left_canary_value = 0xC001;
+    static const unsigned long long right_canary_value = 0xC001;
     static const unsigned long long start_hash = 5381;
     #define CANARY_CAPACITY_ADD 2
     #define LEFT_CANARY_ADD 1
@@ -50,8 +50,6 @@ enum StkErrors
     UNKNOWN
 };
 #endif
-
-
 
 struct Stack
 {
