@@ -18,8 +18,8 @@ int main()
     CHECK_FUNC(CTOR(&stk))
 
     CHECK_FUNC(enter_element(&stk))
+    CHECK_FUNC(enter_element(&stk))
 
-    CHECK_FUNC(del_element(&stk))
     dump(&stk POSITION);
 
     dtor(&stk);

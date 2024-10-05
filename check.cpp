@@ -13,8 +13,8 @@ void dump(Stack* stk, const char* file, const char* func, const int code_str)
     printf("called from %s: %d (%s)\n", file, code_str, func);
     printf("name stk born at %s: %d (%s)\n", stk->origin_file, stk->origin_str, stk->origin_func);
 
-    printf("\nleft canary = %x\n", (size_t)start_ptr[0]);
-    printf("right canary = %x\n\n", (size_t)start_ptr[capacity + LEFT_CANARY_ADD]);
+    printf("\nleft canary = %#x\n", (size_t)start_ptr[0]);
+    printf("right canary = %#x\n\n", (size_t)start_ptr[capacity + LEFT_CANARY_ADD]);
 
     printf("array data address %p\n", start_ptr);
     printf("capacity = %d\n", capacity);
@@ -33,7 +33,7 @@ void print_stk_elements(stack_element_t* start_ptr, size_t capacity, size_t size
         else
             printf("   ");
         if (start_ptr[i + LEFT_CANARY_ADD] == poison)
-            printf("[%d] = %lg (POISON)\n", i, poison);
+            printf("[%d] = %lf (POISON)\n", i, poison);
         else
             printf("[%d] = %lf\n", i, start_ptr[i + LEFT_CANARY_ADD]);
     }
@@ -70,11 +70,6 @@ StkErrors check(Stack* stk)
         }
     }
 
-    if(start_ptr[0] != left_canary_value)
-    {
-        printf("problem in left canary\n");
-        return PROBLEM;
-    }
 
     if(start_ptr[capacity + LEFT_CANARY_ADD] != right_canary_value)
     {
