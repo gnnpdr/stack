@@ -11,11 +11,11 @@ StkErrors ctor(Stack* stk, const char* file, const char* func, const int code_st
     #endif
 
     stk->size = 0;
-    stk->capacity = AMOUNT;
+    stk->capacity = stk_amount;
     size_t capacity = stk->capacity;
     stack_element_t* start_ptr = 0;
 
-    start_ptr = (stack_element_t*)calloc(capacity + ADD_CAP, sizeof(stack_element_t));
+    start_ptr = (stack_element_t*)calloc(capacity + CANARY_CAPACITY_ADD, sizeof(stack_element_t));
     if (start_ptr == nullptr)
     {
         printf("no place for arrays\n");   //пропишем здесь, тк после этого вернутся в main, обходя assert_func, где должна былаа вывестись надпись
@@ -23,11 +23,11 @@ StkErrors ctor(Stack* stk, const char* file, const char* func, const int code_st
     }
     
     for (size_t i = 0; i < capacity; i++)
-        start_ptr[i + ADD_IN] = POISON;
+        start_ptr[i + LEFT_CANARY_ADD] = poison;
 
     #ifdef DEBUG
-    start_ptr[0] = LEFT_CANARY;
-    start_ptr[capacity + ADD_IN] = RIGHT_CANARY;
+    start_ptr[0] = left_canary_value;
+    start_ptr[capacity + LEFT_CANARY_ADD] = right_canary_value;
     #endif
 
     stk->data = start_ptr; //сначала делаем все нужное в памяти, а потом просто присваеваем этот кусок элементу структуры

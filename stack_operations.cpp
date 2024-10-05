@@ -5,7 +5,6 @@
 StkErrors enter_element(Stack* stk)
 {
     ASSERT_STK(stk)
-    
 
     printf("what do you want to add?\n");
     stack_element_t element = 0;
@@ -16,7 +15,7 @@ StkErrors enter_element(Stack* stk)
     scanf("%d", &amount);
 
     for (size_t i = 0; i < amount; i++)
-        push(stk, element);
+        CHECK_FUNC(push(stk, element))
 
     ASSERT_STK(stk)
 
@@ -30,19 +29,17 @@ StkErrors push(Stack* stk, stack_element_t element)
     
     size_t size = stk->size;
     size_t capacity = stk->capacity;
-    
 
     if (size >= capacity)
     {
-        size_t new_capacity = capacity * DELTA;
-        change_capacity(stk, new_capacity, capacity);
+        size_t new_capacity = capacity * delta;
+        CHECK_FUNC(change_capacity(stk, new_capacity, capacity))
     }
 
-    stk->data[stk->size + ADD_IN] = element;
+    stk->data[stk->size + LEFT_CANARY_ADD] = element;
     stk->size++;
 
-    //printf("push\n");
-    check_hash(stk);
+    stk->hash = stk_hash(stk);
 
     ASSERT_STK(stk)
 
@@ -55,23 +52,22 @@ StkErrors change_capacity(Stack* stk, size_t new_capacity, size_t capacity)
 
     stack_element_t* start_ptr = stk->data;
 
-    start_ptr = (stack_element_t*)realloc(start_ptr, (new_capacity + ADD_CAP)*sizeof(stack_element_t));
+    start_ptr = (stack_element_t*)realloc(start_ptr, (new_capacity + CANARY_CAPACITY_ADD)*sizeof(stack_element_t));
     if (start_ptr == nullptr)
     {
         printf("no place\n");
         return NO_PLACE;
     }
 
-    //в случае увеличения
     if (new_capacity > capacity)
     {
-        for (size_t i = 0; i < capacity + ADD_IN; i++)
-            start_ptr[capacity + ADD_IN + i] = POISON;
+        for (size_t i = 0; i < capacity + LEFT_CANARY_ADD; i++)
+            start_ptr[capacity + LEFT_CANARY_ADD + i] = poison;
     }
     else 
-        memset(start_ptr + new_capacity + ADD_CAP, 0, new_capacity + ADD_IN);
+        memset(start_ptr + new_capacity + LEFT_CANARY_ADD, 0, new_capacity + LEFT_CANARY_ADD);
     
-    start_ptr[new_capacity + ADD_IN] = LEFT_CANARY;
+    start_ptr[new_capacity + LEFT_CANARY_ADD] = left_canary_value;
 
     stk->capacity = new_capacity;
     stk->data = start_ptr;
@@ -81,12 +77,6 @@ StkErrors change_capacity(Stack* stk, size_t new_capacity, size_t capacity)
     return ALL_RIGHT;
 }
 
-void check_hash(Stack* stk)  //!!!!!!!!!!
-{
-    stk->hash = stk_hash(stk);
-
-}
-
 StkErrors del_element(Stack* stk)
 {
     ASSERT_STK(stk)
@@ -94,10 +84,10 @@ StkErrors del_element(Stack* stk)
     size_t amount = 0;
     printf("how many elements do you want to del?\n");
     scanf("%d", &amount);
-    
+
     for (size_t i = 0; i < amount; i++)
-        pop(stk);
-    
+        CHECK_FUNC(pop(stk))
+
     ASSERT_STK(stk)
 
     return ALL_RIGHT;
@@ -111,17 +101,16 @@ StkErrors pop(Stack* stk)
     size_t capacity = stk->capacity;
     stack_element_t* start_ptr = stk->data;
 
-    if (size <= capacity / 4)
+    if (size <= (capacity / double_delta))
     {
-        size_t new_capacity = capacity / DELTA;
-        change_capacity(stk, new_capacity, capacity);
+        size_t new_capacity = capacity / delta;
+        CHECK_FUNC(change_capacity(stk, new_capacity, capacity))
     }
-
     
-    start_ptr[size] = POISON;
+    start_ptr[size] = poison;
     stk->size--;
 
-    check_hash(stk);
+    stk->hash = stk_hash(stk);
 
     ASSERT_STK(stk)
 

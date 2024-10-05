@@ -6,19 +6,21 @@
 
 #define DEBUG
 
+typedef double stack_element_t;
+
 #ifdef DEBUG
-    #define ADD_CAP 2
-    #define ADD_IN 1
-    #define LEFT_CANARY 0xC00F
-    #define RIGHT_CANARY 0xC00F
-    #define START_HASH 5381
-    #define POISON 13
+    static const stack_element_t poison = 13;
+    static const unsigned long long left_canary_value = 0xC00F;
+    static const unsigned long long right_canary_value = 0xC00F;
+    static const unsigned long long start_hash = 5381;
+    #define CANARY_CAPACITY_ADD 2
+    #define LEFT_CANARY_ADD 1
 
     #define CHECK_FUNC(func)    do                        \
                                 {                         \
                                     if(func != ALL_RIGHT) \
-                                        return 0;         \
-                                } while (0);
+                                        return PROBLEM;         \
+                                } while(0);
 
     #define ASSERT_STK(stk)     do                              \
                                 {                               \
@@ -27,11 +29,12 @@
                                         dump(stk POSITION);     \
                                         return PROBLEM;         \
                                     }                           \
-                                } while (0);
+                                } while(0);
 
     #define POSITION , __FILE__, __func__, __LINE__
 #else
-    #define ADD
+    #define CANARY_CAPACITY_ADD 
+    #define LEFT_CANARY_ADD 
     #define POSITION
 #endif
 
@@ -48,7 +51,7 @@ enum StkErrors
 };
 #endif
 
-typedef double stack_element_t;
+
 
 struct Stack
 {
