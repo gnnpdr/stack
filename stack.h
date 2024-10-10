@@ -9,9 +9,9 @@ static const int stk_amount = 4;
 static const int delta = 2;
 static const int double_delta = 4;
 
-#define CTOR(stk) ctor(stk POSITION)
+//#define CTOR(stk, err) ctor(stk POSITION)
 
-StkErrors ctor(Stack* stk, const char* file, const char* func, const int code_str);
+StkErrors ctor(Stack* stk, const char* file, const char* func, const int code_str, StkErrors* err);
 
 void dtor(Stack* stk);
 
