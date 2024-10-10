@@ -2,78 +2,88 @@
 
 #include "stack_operations.h"
 
-StkErrors push(Stack* stk, stack_element_t element)
+StkErrors push(Stack* stk, stack_element_t element, StkErrors* err)
 {
-    ASSERT_STK(stk)
+    CHECK_STK(stk, err)
 
-    stack_element_t* start_ptr = stk->data;
-    size_t size = stk->size;
-    size_t capacity = stk->capacity;
+    stack_element_t* data = stk->data;
+    size_t           size      = stk->size;
+    size_t           capacity  = stk->capacity;
 
     if (size >= capacity)
     {
         size_t new_capacity = capacity * delta;
-        CHECK_FUNC(change_capacity(stk, new_capacity, capacity))
+        change_capacity(stk, new_capacity, capacity, err);
+        RETURN(*err)
     }
 
-    start_ptr[size + LEFT_CANARY_ADD] = element;
+    data[size LEFT_CANARY_ADD] = element;
     size++;
     stk->size = size;
+    #ifdef DEBUG
     stk->hash = stk_hash(stk);
+    #endif
 
-    ASSERT_STK(stk)
+    CHECK_STK(stk, err)
     return ALL_RIGHT;
 }
 
-StkErrors change_capacity(Stack* stk, size_t new_capacity, size_t capacity)
+StkErrors change_capacity(Stack* stk, size_t new_capacity, size_t capacity, StkErrors* err)
 {
-    ASSERT_STK(stk)
+    CHECK_STK(stk, err)
 
-    stack_element_t* start_ptr = stk->data;
+    stack_element_t* data = stk->data;
 
-    start_ptr = (stack_element_t*)realloc(start_ptr, (new_capacity + CANARY_CAPACITY_ADD)*sizeof(stack_element_t));
-    if (start_ptr == nullptr)
+    data = (stack_element_t*)realloc(data, (new_capacity CANARY_CAPACITY_ADD)*sizeof(stack_element_t));
+    #ifdef DEBUG
+    if (data == nullptr)
     {
         printf("no place\n");
         return NO_PLACE;
     }
+    #endif 
 
     if (new_capacity > capacity)
     {
-        for (size_t i = 0; i < capacity + LEFT_CANARY_ADD; i++)
-            start_ptr[capacity + LEFT_CANARY_ADD + i] = poison;
+        for (size_t i = 0; i < capacity LEFT_CANARY_ADD; i++)
+            data[capacity LEFT_CANARY_ADD + i] = poison;
     }
-    else 
-        memset(start_ptr + new_capacity + LEFT_CANARY_ADD, 0, new_capacity + LEFT_CANARY_ADD);
-    
-    start_ptr[new_capacity + LEFT_CANARY_ADD] = left_canary_value;
 
     stk->capacity = new_capacity;
-    stk->data = start_ptr;
+    stk->data = data;
 
-    ASSERT_STK(stk)
+    #ifdef DEBUG
+    data[new_capacity LEFT_CANARY_ADD] = right_canary_value;
+    
+    #endif
+
+    CHECK_STK(stk, err)
     return ALL_RIGHT;
 }
 
-StkErrors pop(Stack* stk)
+StkErrors pop(Stack* stk, StkErrors* err)
 {
-    ASSERT_STK(stk)
+    CHECK_STK(stk, err)
 
     size_t size = stk->size;
     size_t capacity = stk->capacity;
-    stack_element_t* start_ptr = stk->data;
+    stack_element_t* data = stk->data;
 
     if (size <= (capacity / double_delta))
     {
         size_t new_capacity = capacity / delta;
-        CHECK_FUNC(change_capacity(stk, new_capacity, capacity))
+        change_capacity(stk, new_capacity, capacity, err);
+        RETURN(*err)
     }
     
-    start_ptr[size] = poison;
+    data[size] = poison;
     size--;
     stk->size = size;
-    stk->hash = stk_hash(stk);
 
-    ASSERT_STK(stk)
+    #ifdef DEBUG
+    stk->hash = stk_hash(stk);
+    
+    #endif
+    CHECK_STK(stk, err)
     return ALL_RIGHT;
 }
