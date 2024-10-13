@@ -17,9 +17,10 @@ StkErrors push(Stack* stk, stack_element_t element, StkErrors* err)
         RETURN(*err)
     }
 
-    data[size LEFT_CANARY_ADD] = element;
+    data[size] = element;
     size++;
     stk->size = size;
+    
     #ifdef DEBUG
     stk->hash = stk_hash(stk);
     #endif
@@ -45,7 +46,7 @@ StkErrors change_capacity(Stack* stk, size_t new_capacity, size_t capacity, StkE
 
     if (new_capacity > capacity)
     {
-        for (size_t i = 0; i < capacity LEFT_CANARY_ADD; i++)
+        for (size_t i = 0; i <= capacity LEFT_CANARY_ADD; i++)
             data[capacity LEFT_CANARY_ADD + i] = poison;
     }
 
@@ -69,7 +70,7 @@ StkErrors pop(Stack* stk, StkErrors* err)
     size_t capacity = stk->capacity;
     stack_element_t* data = stk->data;
 
-    if (size <= (capacity / double_delta))
+    if (size == (capacity / double_delta))
     {
         size_t new_capacity = capacity / delta;
         change_capacity(stk, new_capacity, capacity, err);
@@ -77,13 +78,15 @@ StkErrors pop(Stack* stk, StkErrors* err)
     }
     
     data[size] = poison;
-    size--;
+    size--; 
     stk->size = size;
+
+    stk->data = data;
 
     #ifdef DEBUG
     stk->hash = stk_hash(stk);
-    
     #endif
+
     CHECK_STK(stk, err)
     return ALL_RIGHT;
 }

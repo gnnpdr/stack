@@ -4,10 +4,28 @@
 #include <assert.h>
 #include <math.h>
 
-//#define DEBUG
+#define DEBUG
 
 typedef double stack_element_t;
 static const stack_element_t poison = 13;
+
+#define POSITION , __FILE__, __func__, __LINE__
+
+struct Stack
+{
+    #ifdef DEBUG
+    unsigned long long left_canary;
+    const char* origin_file;
+    int origin_str;
+    const char* origin_func;
+    unsigned long long hash;
+    unsigned long long right_canary;
+    #endif
+
+    stack_element_t* data;
+    size_t size;
+    size_t capacity;
+};
 enum StkErrors
 {
     ALL_RIGHT,
@@ -18,8 +36,6 @@ enum StkErrors
     VALUE_PROBLEM,
     UNKNOWN
 };
-
-
 
 #ifdef DEBUG
     
@@ -50,25 +66,6 @@ enum StkErrors
     #define LEFT_CANARY_ADD + 0
     
 #endif
-
-#define POSITION , __FILE__, __func__, __LINE__
-
-struct Stack
-{
-    #ifdef DEBUG
-    unsigned long long left_canary;
-    const char* origin_file;
-    int origin_str;
-    const char* origin_func;
-    unsigned long long hash;
-    unsigned long long right_canary;
-    #endif
-
-    stack_element_t* data;
-    size_t size;
-    size_t capacity;
-};
-
 
 void dump(Stack* stk, const char* file, const char* func, const int code_str);
 void print_stk_elements(stack_element_t* data, size_t capacity, size_t size);

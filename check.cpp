@@ -15,7 +15,7 @@ void dump(Stack* stk, const char* file, const char* func, const int code_str)
     printf("name stk born at %s: %d (%s)\n", stk->origin_file, stk->origin_str, stk->origin_func);
 
     printf("\nleft canary = %#x\n", (size_t)data[0]);
-    printf("right canary = %#x\n\n", (size_t)data[capacity + LEFT_CANARY_ADD]);
+    printf("right canary = %#x\n\n", (size_t)data[capacity LEFT_CANARY_ADD]);
 
     printf("array data address %p\n", data);
     printf("capacity = %d\n", capacity);
@@ -47,16 +47,8 @@ StkErrors check(Stack* stk)
         return BUFFER_OVERFLOW;
     }
         
-    for (size_t i = 0; i < size; i++)
-    {
-        if (data[i] == poison)
-        {
-            printf("elements were not add\n");
-            return VALUE_PROBLEM;
-        }
-    }
 
-    if(data[capacity + LEFT_CANARY_ADD] != right_canary_value)
+    if(data[capacity LEFT_CANARY_ADD] != right_canary_value)
     {
         printf("problem in right canary\n");
         return PROBLEM;
@@ -77,29 +69,32 @@ unsigned long long stk_hash(Stack* stk)
     unsigned long long hash = start_hash;
     stack_element_t* data = stk->data;
     size_t size = stk->size;
-    size_t elem_num = 0;
+    if (data[size] == poison)
+        size--;
+
+    size_t elem_num = LEFT_CANARY_ADD;
 
     while (elem_num < size)
     {
-        hash = hash * 33  + (unsigned long long)data[elem_num  + LEFT_CANARY_ADD];
+        hash = hash * 33  + (unsigned long long)data[elem_num];
         elem_num++;
     }
     return hash;
 }
 #endif
 
-/*void print_stk_elements(stack_element_t* data, size_t capacity, size_t size)
+void print_stk_elements(stack_element_t* data, size_t capacity, size_t size)
 {
-    for (size_t i = 0; i < capacity; i++)
+    for (size_t i = LEFT_CANARY_ADD; i < capacity; i++)
     {
         if(i < size)
             printf(" * ");
         else
             printf("   ");
-        if (data[i LEFT_CANARY_ADD] == poison)
-            printf("[%d] = %lg (POISON)\n", i, poison);
+        if (data[i] == poison)
+            printf("[%d] = %lf (POISON)\n", i, poison);
         else
-            printf("[%d] = %lg\n", i, data[i LEFT_CANARY_ADD]);
+            printf("[%d] = %lf\n", i, data[i]);
     }
     printf(" }\n}");
-}*/
+}
