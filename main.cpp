@@ -1,32 +1,34 @@
 #include <stdio.h>
 
-#include "check.h"
-#include "stack.h"
-#include "user.h"
-#include "stack_operations.h"
+#include "include/check.h"
+#include "include/stk.h"
+#include "include/user.h"
 
 int main()
 {
-    StkErrors err = ALL_RIGHT;
+    ErrList list = {};
+    error_list_ctor(&list);
 
     Stack stk = {};
 
     #ifdef DEBUG
-    stk.left_canary = left_canary_value;
-    stk.right_canary = right_canary_value;
-    stk.hash = start_hash;
+    stk.left_canary = L_CAN_VAL;
+    stk.right_canary = R_CAN_VAL;
+    stk.hash = START_HASH;
     #endif
 
-    ctor(&stk, __FILE__, __func__, __LINE__, &err);
+    stk_ctor(&stk, &list);
+    FATAL_ERR
 
-    enter_element(&stk, &err);
-    del_element(&stk, &err);
-    enter_element(&stk, &err);
-    del_element(&stk, &err);
+    enter_elements(&stk, &list);
+    FATAL_ERR
+    del_elements(&stk, &list);
+    FATAL_ERR
 
-    print_stk_elements(stk.data, stk.capacity, stk.size);
+    dump(&stk, LOCATION, &list);
 
-    dtor(&stk);
+    stk_dtor(&stk);
+    error_list_dtor(&list);
 
     return 0;
 }
